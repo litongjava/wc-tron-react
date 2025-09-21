@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景：圆角矩形 + 渐变 -->
+    <defs>
+        <linearGradient id="g" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#141414"/>
+            <stop offset="1" stop-color="#1f1f1f"/>
+        </linearGradient>
+        <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+                        gradientTransform="translate(256 200) rotate(90) scale(220)">
+            <stop offset="0" stop-color="#FF2E2E" stop-opacity="0.45"/>
+            <stop offset="1" stop-color="#FF2E2E" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="strokeRed" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FF3B3B"/>
+            <stop offset="1" stop-color="#FF6B6B"/>
+        </linearGradient>
+        <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FFE66D"/>
+            <stop offset="1" stop-color="#FFD43B"/>
+        </linearGradient>
+    </defs>
+
+    <rect x="24" y="24" width="464" height="464" rx="80" fill="url(#g)"/>
+    <rect x="24" y="24" width="464" height="464" rx="80" fill="url(#glow)"/>
+
+    <!-- 抽象 TRON 几何（三角网格，避免使用商标的精确形状） -->
+    <g transform="translate(256 270) scale(1.0) translate(-256 -256)">
+        <g transform="translate(96 96)">
+            <path d="M160 0 L320 240 L0 240 Z" fill="none" stroke="url(#strokeRed)" stroke-width="8" stroke-linejoin="round"/>
+            <path d="M160 0 L160 240" fill="none" stroke="url(#strokeRed)" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+            <path d="M0 240 L240 120 L320 240" fill="none" stroke="url(#strokeRed)" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+            <circle cx="160" cy="0" r="5" fill="#FF5252"/>
+            <circle cx="0" cy="240" r="5" fill="#FF5252"/>
+            <circle cx="320" cy="240" r="5" fill="#FF5252"/>
+            <circle cx="240" cy="120" r="4" fill="#FF8A8A"/>
+        </g>
+    </g>
+
+    <!-- WC 闪电（代表 WalletConnect/连接） -->
+    <g transform="translate(256 170)">
+        <path d="M-26 -20 L22 -20 L2 28 L32 28 L-36 98 L-16 48 L-46 48 Z"
+              fill="url(#bolt)" stroke="#312500" stroke-opacity="0.35" stroke-width="3" />
+        <path d="M-26 -20 L22 -20 L2 28 L32 28 L-36 98 L-16 48 L-46 48 Z"
+              fill="none" stroke="#FFF4B0" stroke-opacity="0.5" stroke-width="2"/>
+    </g>
+
+    <!-- 文案：WC · TRON -->
+    <g font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" text-anchor="middle">
+        <text x="256" y="410" font-size="52" fill="#EDEDED" letter-spacing="1.5">WC · TRON</text>
+        <text x="256" y="446" font-size="20" fill="#9E9E9E" opacity="0.9">Earndao WalletConnect</text>
+    </g>
+
+    <!-- 轻微内边框高光 -->
+    <rect x="24" y="24" width="464" height="464" rx="80" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+</svg>
