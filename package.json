@@ -13,7 +13,8 @@
     "@tronweb3/tronwallet-adapter-walletconnect": "^2.0.3",
     "@tronweb3/tronwallet-adapters": "^1.2.13",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
