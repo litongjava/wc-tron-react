@@ -5,23 +5,39 @@ function isMobileUA() {
   return /android|iphone|ipad|ipod|miui|harmonyos/.test(ua);
 }
 
+// 解析形如 https://domain/#/launch-tronlink?param=...&chat_id=...
+function getHashQuery() {
+  const hash = window.location.hash || "";            // "#/launch-tronlink?param=...&chat_id=..."
+  const i = hash.indexOf("?");
+  if (i === -1) return new URLSearchParams("");
+  return new URLSearchParams(hash.substring(i + 1));  // 只取问号后的部分
+}
+
 export default function LaunchTronLink() {
   const [tip, setTip] = useState("");
-  const qs = useMemo(() => new URLSearchParams(window.location.search), []);
-  const param = qs.get("param") || ""; // 必须由后端预先 encodeURIComponent 过的 JSON
-  const deeplink = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(param);
 
-  // 打开 TronLink，并在 1.2s 后做商店兜底
+  // 1) 先从 hash 里找，再从 search 里找（兼容两种部署）
+  const qsHash   = useMemo(getHashQuery, []);
+  const qsSearch = useMemo(() => new URLSearchParams(window.location.search), []);
+
+  // 2) 你的后端已经对 JSON 做了 encodeURIComponent，这里直接用，不要再 encode 一次
+  const paramEncoded = qsHash.get("param") || qsSearch.get("param") || "";
+
+  // 3) 直接拼到 deeplink。注意：不要再 encodeURIComponent(paramEncoded)
+  const deeplink = "tronlinkoutside://pull.activity?param=" + paramEncoded;
+
   const openTronLink = () => {
     setTip("正在尝试打开 TronLink…");
+    // 尝试唤起 App
     window.location.href = deeplink;
 
+    // 兜底：如果未被 App 接管，跳应用商店
     const ua = navigator.userAgent.toLowerCase();
     const isAndroid = /android/.test(ua);
     const isIOS = /iphone|ipad|ipod/.test(ua);
 
-    // 若 1.2 秒内未被 App 接管，则跳应用商店
     setTimeout(() => {
+      // 仍然可见，说明没有跳走
       if (document.visibilityState === "visible") {
         if (isAndroid) {
           window.location.href = "https://play.google.com/store/apps/details?id=com.tronlinkpro.wallet";
@@ -33,11 +49,10 @@ export default function LaunchTronLink() {
   };
 
   useEffect(() => {
-    if (!param) {
+    if (!paramEncoded) {
       setTip("参数缺失：没有 param（深链 JSON）。");
       return;
     }
-    // 移动端自动尝试
     if (isMobileUA()) {
       openTronLink();
     } else {
@@ -47,50 +62,45 @@ export default function LaunchTronLink() {
   }, []);
 
   return (
-    <div style={{
-      padding: 16,
-      fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
-      maxWidth: 720,
-      margin: "0 auto"
-    }}>
+    <div style={{ padding: 16, fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,sans-serif", maxWidth: 720, margin: "0 auto" }}>
       <h3>打开 TronLink 完成签名绑定</h3>
-      <div style={{marginTop: 12, padding: 12, background: "#f7f7f9", borderRadius: 8}}>
+
+      <div style={{ marginTop: 12, padding: 12, background: "#f7f7f9", borderRadius: 8 }}>
         {tip || "准备就绪"}
       </div>
 
       {!isMobileUA() && (
-        <div style={{marginTop: 16}}>
-          <ol style={{lineHeight: 1.7}}>
+        <div style={{ marginTop: 16 }}>
+          <ol style={{ lineHeight: 1.7 }}>
             <li>请用<strong>手机</strong>打开此页面（或复制下方链接到手机浏览器）。</li>
             <li>确保已安装 <strong>TronLink</strong> App。</li>
             <li>打开页面后会自动拉起 TronLink 进行签名。</li>
           </ol>
-
-          <div style={{marginTop: 12, wordBreak: "break-all", fontSize: 13}}>
+          <div style={{ marginTop: 12, wordBreak: "break-all", fontSize: 13 }}>
             页面直链：<code>{window.location.href}</code>
           </div>
         </div>
       )}
 
-      <div style={{marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap"}}>
-        <button onClick={openTronLink} style={{padding: "10px 14px"}}>
+      <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <button onClick={openTronLink} style={{ padding: "10px 14px" }}>
           再次尝试打开 TronLink
         </button>
         <button
           onClick={() => navigator.clipboard?.writeText(window.location.href)}
-          style={{padding: "10px 14px"}}
+          style={{ padding: "10px 14px" }}
         >
           复制本页链接（发到手机）
         </button>
       </div>
 
-      <details style={{marginTop: 18}}>
+      <details style={{ marginTop: 18 }}>
         <summary>调试信息</summary>
-        <div style={{fontSize: 13, marginTop: 8}}>
+        <div style={{ fontSize: 13, marginTop: 8 }}>
           <div><b>deeplink</b>：</div>
-          <div style={{wordBreak: "break-all"}}><code>{deeplink}</code></div>
-          <div style={{marginTop: 8}}><b>param</b>（已编码）：</div>
-          <div style={{wordBreak: "break-all"}}><code>{param}</code></div>
+          <div style={{ wordBreak: "break-all" }}><code>{deeplink}</code></div>
+          <div style={{ marginTop: 8 }}><b>param</b>（已编码）：</div>
+          <div style={{ wordBreak: "break-all" }}><code>{paramEncoded}</code></div>
         </div>
       </details>
     </div>
