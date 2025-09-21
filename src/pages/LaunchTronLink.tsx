@@ -8,7 +8,6 @@ function isMobileUA() {
 export default function LaunchTronLink() {
   const [tip, setTip] = useState("");
   const qs = useMemo(() => new URLSearchParams(window.location.search), []);
-  const chatId = qs.get("chat_id") || "";
   const param = qs.get("param") || ""; // 必须由后端预先 encodeURIComponent 过的 JSON
   const deeplink = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(param);
 
@@ -55,11 +54,6 @@ export default function LaunchTronLink() {
       margin: "0 auto"
     }}>
       <h3>打开 TronLink 完成签名绑定</h3>
-
-      <div style={{marginTop: 8, fontSize: 14, color: "#555"}}>
-        {chatId ? <>当前 ChatId：<b>{chatId}</b></> : "未检测到 chat_id（可忽略）"}
-      </div>
-
       <div style={{marginTop: 12, padding: 12, background: "#f7f7f9", borderRadius: 8}}>
         {tip || "准备就绪"}
       </div>
